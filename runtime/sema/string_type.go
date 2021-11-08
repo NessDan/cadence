@@ -59,7 +59,7 @@ func init() {
 					return NewPublicFunctionMember(
 						t,
 						identifier,
-						stringTypeConcatFunctionType,
+						StringTypeConcatFunctionType,
 						stringTypeConcatFunctionDocString,
 					)
 				},
@@ -70,7 +70,7 @@ func init() {
 					return NewPublicFunctionMember(
 						t,
 						identifier,
-						stringTypeSliceFunctionType,
+						StringTypeSliceFunctionType,
 						stringTypeSliceFunctionDocString,
 					)
 				},
@@ -81,7 +81,7 @@ func init() {
 					return NewPublicFunctionMember(
 						t,
 						identifier,
-						stringTypeDecodeHexFunctionType,
+						StringTypeDecodeHexFunctionType,
 						stringTypeDecodeHexFunctionDocString,
 					)
 				},
@@ -92,9 +92,7 @@ func init() {
 					return NewPublicConstantFieldMember(
 						t,
 						identifier,
-						&VariableSizedType{
-							Type: UInt8Type,
-						},
+						ByteArrayType,
 						stringTypeUtf8FieldDocString,
 					)
 				},
@@ -110,11 +108,22 @@ func init() {
 					)
 				},
 			},
+			"toLower": {
+				Kind: common.DeclarationKindField,
+				Resolve: func(identifier string, _ ast.Range, _ func(error)) *Member {
+					return NewPublicConstantFieldMember(
+						t,
+						identifier,
+						StringTypeToLowerFunctionType,
+						stringTypeToLowerFunctionDocString,
+					)
+				},
+			},
 		}
 	}
 }
 
-var stringTypeConcatFunctionType = &FunctionType{
+var StringTypeConcatFunctionType = &FunctionType{
 	Parameters: []*Parameter{
 		{
 			Label:          ArgumentLabelNotRequired,
@@ -131,7 +140,7 @@ const stringTypeConcatFunctionDocString = `
 Returns a new string which contains the given string concatenated to the end of the original string, but does not modify the original string
 `
 
-var stringTypeSliceFunctionType = &FunctionType{
+var StringTypeSliceFunctionType = &FunctionType{
 	Parameters: []*Parameter{
 		{
 			Identifier:     "from",
@@ -155,12 +164,12 @@ It does not modify the original string.
 If either of the parameters are out of the bounds of the string, the function will fail
 `
 
-var stringTypeDecodeHexFunctionType = &FunctionType{
-	ReturnTypeAnnotation: NewTypeAnnotation(
-		&VariableSizedType{
-			Type: UInt8Type,
-		},
-	),
+var ByteArrayType = &VariableSizedType{
+	Type: UInt8Type,
+}
+
+var StringTypeDecodeHexFunctionType = &FunctionType{
+	ReturnTypeAnnotation: NewTypeAnnotation(ByteArrayType),
 }
 
 const stringTypeDecodeHexFunctionDocString = `
@@ -176,4 +185,12 @@ The number of characters in the string
 
 const stringTypeUtf8FieldDocString = `
 The byte array of the UTF-8 encoding
+`
+
+var StringTypeToLowerFunctionType = &FunctionType{
+	ReturnTypeAnnotation: NewTypeAnnotation(StringType),
+}
+
+const stringTypeToLowerFunctionDocString = `
+Returns the string with upper case letters replaced with lowercase
 `
